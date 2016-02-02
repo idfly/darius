@@ -1,0 +1,2 @@
+database: '$DATABASE'
+redis: '$REDIS'

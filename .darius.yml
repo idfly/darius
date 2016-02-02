@@ -1,0 +1,92 @@
+tasks:
+
+  update:
+
+    - name: install ruby gems
+      command: >
+        docker run \
+          --rm \
+          --volume $(pwd):/app \
+          idfly/go-app \
+          bundle install \
+            --gemfile .build/gemfile \
+            --path ../.build/vendor/bundle \
+            --jobs 128
+
+    - name: install go dependecies
+      command:
+
+        - name: main
+          command: >
+            docker run \
+              --rm \
+              --volume $(pwd)/.build/go:/go \
+              --volume $(pwd):/go/src/github.com/idfly/darius \
+              --workdir /go/src/github.com/idfly/darius \
+              idfly/go-app \
+              go get .
+
+        - name: main test
+          command: >
+            docker run \
+              --rm \
+              --volume $(pwd)/.build/go:/go \
+              --volume $(pwd):/go/src/github.com/idfly/darius \
+              --workdir /go/src/github.com/idfly/darius \
+              idfly/go-app \
+              go get -t .
+
+        - name: cli
+          command: >
+            docker run \
+              --rm \
+              --volume $(pwd)/.build/go:/go \
+              --volume $(pwd):/go/src/github.com/idfly/darius \
+              --workdir /go/src/github.com/idfly/darius/darius \
+              idfly/go-app \
+              go get .
+
+        - name: cli test
+          command: >
+            docker run \
+              --rm \
+              --volume $(pwd)/.build/go:/go \
+              --volume $(pwd):/go/src/github.com/idfly/darius \
+              --workdir /go/src/github.com/idfly/darius/darius \
+              idfly/go-app \
+              go get -t .
+
+  up:
+    name: update dependecies and start dev containers
+    command:
+
+      - task: run-user-task
+        task-name: update
+
+      - name: run services
+        command: docker-compose -f .build/docker-compose.yml up -d
+
+      - >
+        echo '
+          Application was started; run "docker-compose -f .build/docker-compose.yml up"
+          for connecting to logs.
+        '
+
+  build:
+    name: build
+    command:
+
+      - job: run
+        task: update
+
+      - name: run services
+        command: docker-compose -f .build/docker-compose.yml up -d
+
+      - name: run main tests
+        command: docker exec app.darius.local go test github.com/idfly/darius
+
+      - name: run cli tests
+        command: docker exec app.darius.local go test github.com/idfly/darius/darius
+
+      - name: stop services
+        command: docker-compose -f .build/docker-compose.yml stop

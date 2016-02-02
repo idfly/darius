@@ -1,0 +1,22 @@
+app_darius_local:
+  container_name: app.darius.local
+  image: idfly/go-app
+  entrypoint:
+    - guard
+    - --no-interactions
+    - --no-bundler-warning
+    - --guardfile
+    - .build/guardfile
+  volumes:
+    - ..:/app
+    - ../.build/go:/go
+    - ..:/go/src/github.com/idfly/darius
+    - ../.build/ssh:/root/.ssh
+  links:
+    - 'ssh_darius_local:ssh.darius.local'
+
+ssh_darius_local:
+  build: ./ssh
+  dockerfile: ./ssh.dockerfile
+  container_name: ssh.darius.local
+  hostname: ssh.darius.local

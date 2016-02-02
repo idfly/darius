@@ -1,0 +1,41 @@
+ignore(/\.build/)
+
+guard :shell do
+
+  watch(/^(.*)_test\.go$/) { |match|
+    package = 'github.com/idfly/darius'
+    path = File.dirname(match[1])
+    if path != '.'
+      package = File.join('github.com/idfly/darius', path)
+    end
+
+    command = ['go test', package].join(' ')
+    puts('$ ' + command)
+    system(command)
+  }
+
+  watch(/^(.*)\.go$/) { |match|
+    if match[0].end_with?('_test.go')
+      next
+    end
+
+    path = File.dirname(match[1])
+
+    if path == '.'
+      next
+    end
+
+    command =
+      [
+        'go build',
+        "-o .build/build/#{path.gsub('/', '-')}",
+        "#{File.join('github.com/idfly/darius', path)}",
+        ";",
+        "echo done",
+      ]
+      .join(' ')
+
+    puts('$ ' + command)
+    system(command)
+  }
+end
