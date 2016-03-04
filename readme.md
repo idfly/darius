@@ -8,7 +8,8 @@ Installation
 ------------
 
 ```
-go install github.com/idfly/darius/darius
+go get github.com/idfly/darius
+# or: sudo curl -o /bin/darius idfly.ru/darius/latest && sudo chmod oug+x /bin/darius
 ```
 
 
