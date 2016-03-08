@@ -1,4 +1,4 @@
-package tasks
+package jobs
 
 import (
 	"github.com/idfly/darius"

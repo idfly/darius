@@ -1,4 +1,4 @@
-app_darius_local:
+app:
   container_name: app.darius.local
   image: idfly/go-app
   entrypoint:
@@ -13,9 +13,9 @@ app_darius_local:
     - ..:/go/src/github.com/idfly/darius
     - ../.build/ssh:/root/.ssh
   links:
-    - 'ssh_darius_local:ssh.darius.local'
+    - 'ssh:ssh.darius.local'
 
-ssh_darius_local:
+ssh:
   build: ./ssh
   dockerfile: ./ssh.dockerfile
   container_name: ssh.darius.local

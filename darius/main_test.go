@@ -245,3 +245,23 @@ tasks:
 	assert.NoError(test, err)
 	utils.AssertExpectations(test)
 }
+
+func TestRunRunsUserTask(test *testing.T) {
+	state, utils := newTestState(false)
+	defer state.Destroy()
+	state.argv = []string{}
+	utils.On("readFile", ".darius.yml").Return(`
+tasks:
+  task:
+    task: run-user-task
+    task-name: echo
+  echo: echo VALUE
+`, nil)
+	utils.On("out", "\x1b[35m% \"run-user-task\" is deprecated\x1b[0m", true)
+	utils.On("out", "\x1b[1;32m$ echo VALUE\x1b[0m", true)
+	utils.On("out", "  > VALUE", true)
+	utils.On("out", "\x1b[1;37;42mtask completed\x1b[0m", true)
+	err := call(state, []string{"task"})
+	assert.NoError(test, err)
+	utils.AssertExpectations(test)
+}

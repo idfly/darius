@@ -14,6 +14,8 @@ var (
 			arguments.String,
 			"c",
 			false,
+			nil,
+			false,
 		},
 
 		"help": arguments.Argument{
@@ -21,6 +23,8 @@ var (
 			"displays help",
 			arguments.Flag,
 			"h",
+			false,
+			nil,
 			false,
 		},
 
@@ -30,6 +34,8 @@ var (
 			arguments.Flag,
 			"l",
 			false,
+			nil,
+			false,
 		},
 
 		"tail": arguments.Argument{
@@ -37,6 +43,8 @@ var (
 			"command and its options to execute",
 			arguments.Tail,
 			"",
+			false,
+			nil,
 			false,
 		},
 	}

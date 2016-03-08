@@ -34,6 +34,8 @@ func runTask(state *state, arguments arguments.Values) error {
 		return errors.New("unknown option " + tail[0])
 	}
 
+	state.argv = tail[1:]
+
 	state.runLocally, _, err = arguments.Boolean("local", false)
 	if err != nil {
 		return err

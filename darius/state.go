@@ -7,7 +7,7 @@ import (
 	"os/user"
 
 	"github.com/idfly/darius"
-	"github.com/idfly/darius/tasks"
+	"github.com/idfly/darius/jobs"
 
 	"github.com/shagabutdinov/arguments"
 	"github.com/shagabutdinov/shell"
@@ -20,13 +20,14 @@ const (
 )
 
 var (
-	tasksFuncs = map[string]func(
+	jobsFuncs = map[string]func(
 		darius.State,
 		map[interface{}]interface{},
 	) error{
-		"call":    tasks.Call,
-		"execute": tasks.Execute,
-		"run":     tasks.Run,
+		"call":          jobs.Call,
+		"execute":       jobs.Execute,
+		"run":           jobs.Run,
+		"run-user-task": jobs.RunUserTask,
 	}
 )
 
@@ -38,7 +39,7 @@ func newState() (*state, error) {
 
 	state := &state{
 		args:  map[interface{}]interface{}{},
-		tasks: tasksFuncs,
+		jobs:  jobsFuncs,
 		shell: shell,
 		utils: &utils{
 			stdout: os.Stdout,
@@ -61,8 +62,8 @@ type state struct {
 	utils      utilsInterface
 	expression *darius.Expression
 
-	tasks map[string]func(darius.State, map[interface{}]interface{}) error
-	task  map[interface{}]interface{}
+	jobs map[string]func(darius.State, map[interface{}]interface{}) error
+	task map[interface{}]interface{}
 
 	level  int
 	parent *state
@@ -131,7 +132,14 @@ func (state *state) Log(level darius.LogLevel, message string) {
 }
 
 func (state *state) Call(task string, value map[interface{}]interface{}) error {
-	return state.tasks[task](state, value)
+	taskCallback, ok := state.jobs[task]
+	if !ok {
+		message := `unknown job "` + task + `"`
+		state.Log(darius.LogTaskFail, message)
+		return errors.New(message)
+	}
+
+	return taskCallback(state, value)
 }
 
 func (oldState *state) Spawn(
@@ -145,7 +153,7 @@ func (oldState *state) Spawn(
 		argv:       oldState.argv,
 		args:       darius.Copy(oldState.args).(map[interface{}]interface{}),
 		parent:     oldState,
-		tasks:      oldState.tasks,
+		jobs:       oldState.jobs,
 		utils:      oldState.utils,
 		level:      oldState.level,
 		task:       task,

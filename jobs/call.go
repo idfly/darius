@@ -1,4 +1,4 @@
-package tasks
+package jobs
 
 import (
 	"errors"
@@ -84,6 +84,13 @@ func runMapping(
 	state darius.State,
 	task map[interface{}]interface{},
 ) (bool, error) {
+	// legacy run-user-task; for backward compability
+	if task["task"] == "run-user-task" {
+		state.Log(darius.LogSystem, `"run-user-task" is deprecated`)
+		task["task"] = task["task-name"]
+		return false, state.Call("run-user-task", task)
+	}
+
 	raw, ok := task["job"]
 	if !ok {
 		_, ok := task["command"]

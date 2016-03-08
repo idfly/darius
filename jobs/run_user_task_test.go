@@ -1,4 +1,4 @@
-package tasks
+package jobs
 
 import (
 	"testing"
@@ -6,7 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestCallUserTaskCallsCall(test *testing.T) {
+func TestRunUserTaskCallsCall(test *testing.T) {
 	state := newState()
 	state.On("Config").Return(map[interface{}]interface{}{
 		"tasks": map[interface{}]interface{}{"TASK": "TASK"},
@@ -14,7 +14,7 @@ func TestCallUserTaskCallsCall(test *testing.T) {
 
 	task := map[interface{}]interface{}{"command": "TASK"}
 	state.On("Call", "call", task).Return(nil)
-	err := Run(state, map[interface{}]interface{}{"task": "TASK"})
+	err := RunUserTask(state, map[interface{}]interface{}{"task-name": "TASK"})
 	assert.NoError(test, err)
 	state.AssertExpectations(test)
 }

@@ -76,8 +76,8 @@ tasks:
     name: build
     command:
 
-      - job: run
-        task: update
+      - task: run-user-task
+        task-name: update
 
       - name: run services
         command: docker-compose -f .build/docker-compose.yml up -d

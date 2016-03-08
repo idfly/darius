@@ -1,4 +1,4 @@
-package tasks
+package jobs
 
 import (
 	"errors"
@@ -6,8 +6,8 @@ import (
 	"github.com/idfly/darius"
 )
 
-func Run(state darius.State, task map[interface{}]interface{}) error {
-	err, report := run(state, task)
+func RunUserTask(state darius.State, task map[interface{}]interface{}) error {
+	err, report := runUserTask(state, task)
 	if err != nil {
 		if report {
 			state.Log(darius.LogCommandFail, err.Error())
@@ -19,19 +19,22 @@ func Run(state darius.State, task map[interface{}]interface{}) error {
 	return nil
 }
 
-func run(state darius.State, task map[interface{}]interface{}) (error, bool) {
-	_, ok := task["task"]
+func runUserTask(
+	state darius.State,
+	task map[interface{}]interface{},
+) (error, bool) {
+	_, ok := task["task-name"]
 	if !ok {
-		return errors.New("\"task\" should be defined in task"), true
+		return errors.New("\"task-name\" should be defined in task"), true
 	}
 
 	var err error
-	task["task"], err = state.Expand(task["task"], false)
+	task["task-name"], err = state.Expand(task["task-name"], false)
 	if err != nil {
 		return err, true
 	}
 
-	str, ok := task["task"].(string)
+	str, ok := task["task-name"].(string)
 	if !ok {
 		return errors.New("task name should be string"), true
 	}

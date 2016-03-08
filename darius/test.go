@@ -14,7 +14,7 @@ func newTestState(mockCall bool) (*state, *utilsMock) {
 
 	utils := &utilsMock{}
 	state := &state{
-		tasks: map[string]func(darius.State, map[interface{}]interface{}) error{
+		jobs: map[string]func(darius.State, map[interface{}]interface{}) error{
 			"call": utils.call,
 		},
 		shell:  shell,
@@ -23,7 +23,7 @@ func newTestState(mockCall bool) (*state, *utilsMock) {
 	}
 
 	if !mockCall {
-		state.tasks = tasksFuncs
+		state.jobs = jobsFuncs
 	}
 
 	state.expression = darius.NewExpression(state, state.expandExpression)
