@@ -1,7 +1,7 @@
 Darius
 ======
 
-Shell tasks runner.
+Shell tasks runner: tangle webhook and shell task in your project in order to run task (build, test, deploy) by calling a link.
 
 
 Installation
