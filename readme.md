@@ -33,12 +33,6 @@ $ echo hello
 ```
 
 
-Reference
----------
-
-Reference can be found on official site: [docs.darius-cd.com](http://docs.darius-cd.com)
-
-
 Build
 -----
 
